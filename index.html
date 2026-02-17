@@ -3,22 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON CHAT - FUTURISTIC</title>
+    <title>NEON CHAT - TERMINAL</title>
     <style>
         :root {
-            --bg-color: #050505;
-            --panel-bg: rgba(10, 10, 10, 0.95);
+            --bg-color: #020202;
+            --panel-bg: rgba(5, 5, 5, 0.98);
             --neon-border: #00f3ff;
             --neon-text: #00f3ff;
+            --danger: #ff0055;
         }
 
         body {
             background-color: var(--bg-color);
             background-image: 
-                radial-gradient(circle at 50% 50%, #1a1a1a 0%, #050505 100%),
-                linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
-            background-size: 100% 100%, 30px 30px, 30px 30px;
+                radial-gradient(circle at 50% 50%, #111 0%, #020202 100%),
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
             color: #fff;
             font-family: 'Segoe UI', sans-serif;
             margin: 0;
@@ -28,205 +29,44 @@
             overflow: hidden;
         }
 
-        /* Overlay de Login Mejorado */
-        #login-overlay {
-            position: fixed;
-            top:0; left:0; width: 100%; height:100%;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .login-box {
-            text-align: center;
-            padding: 40px;
-            border: 2px solid var(--neon-border);
-            box-shadow: 0 0 30px var(--neon-border);
-            background: var(--panel-bg);
-        }
-
-        .login-box h2 { color: var(--neon-text); text-shadow: 0 0 10px var(--neon-text); margin-bottom: 20px; }
-
         /* Cabecera */
         #header {
             background: var(--panel-bg);
-            padding: 15px 20px;
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid var(--neon-border);
-            box-shadow: 0 0 15px var(--neon-border);
+            border-bottom: 1px solid var(--neon-border);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+            z-index: 100;
         }
 
-        #header h1 { margin: 0; font-size: 1.1rem; letter-spacing: 2px; color: var(--neon-text); }
+        #header h1 { margin: 0; font-size: 0.9rem; letter-spacing: 4px; color: var(--neon-text); text-transform: uppercase; }
 
         #btnVaciar {
             background: transparent;
-            color: #ff0055;
-            border: 1px solid #ff0055;
-            padding: 5px 12px;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 4px 10px;
             cursor: pointer;
-            text-transform: uppercase;
             font-size: 0.7rem;
+            font-weight: bold;
+            transition: 0.3s;
         }
+        #btnVaciar:hover { background: var(--danger); color: white; box-shadow: 0 0 15px var(--danger); }
 
-        /* Área de Chat */
-        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        /* Chat */
+        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
 
         .bubble {
-            padding: 12px 16px;
-            border-radius: 10px;
-            max-width: 80%;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid;
-            backdrop-filter: blur(4px);
-            word-wrap: break-word;
+            padding: 10px 15px;
+            border-radius: 4px;
+            max-width: 85%;
+            background: rgba(0, 0, 0, 0.8);
+            border-left: 3px solid;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
         }
 
-        .bubble b { display: block; font-size: 0.75rem; margin-bottom: 4px; filter: brightness(1.2); }
+        .bubble b { display: block; font-size: 0.7rem; margin-bottom: 2px; letter-spacing: 1px; }
 
-        /* Controles */
-        #controls { background: var(--panel-bg); padding: 15px; display: flex; gap: 10px; border-top: 1px solid var(--neon-border); }
-
-        input#msg-input, input#username {
-            background: #000;
-            border: 1px solid var(--neon-border);
-            color: #fff;
-            padding: 12px;
-            outline: none;
-            box-shadow: inset 0 0 5px var(--neon-border);
-        }
-
-        button.neon-btn {
-            background: var(--neon-border);
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        button.neon-btn:hover { box-shadow: 0 0 15px var(--neon-border); }
-    </style>
-</head>
-<body>
-
-    <div id="login-overlay">
-        <div class="login-box">
-            <h2>ACCESO AL SISTEMA</h2>
-            <input type="text" id="username" placeholder="NOMBRE DE USUARIO..." autocomplete="off">
-            <br><br>
-            <button id="enter-btn" class="neon-btn">INGRESAR</button>
-        </div>
-    </div>
-
-    <div id="header">
-        <h1>NODE_CHAT // <span id="display-name">---</span></h1>
-        <button id="btnVaciar">Vaciar Pantalla</button>
-    </div>
-
-    <div id="chat-container"></div>
-
-    <div id="controls">
-        <input type="text" id="msg-input" placeholder="Escribir mensaje..." autocomplete="off">
-        <button id="send" class="neon-btn">ENVIAR</button>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCfOBCYgEEfgKC53t-v2G6ll_XwD9nh6C8",
-            authDomain: "cubachat-6f674.firebaseapp.com",
-            projectId: "cubachat-6f674",
-            storageBucket: "cubachat-6f674.firebasestorage.app",
-            messagingSenderId: "351613355145",
-            appId: "1:351613355145:web:e8e6939aac0f08ffa33258"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        const neonColors = ['#00f3ff', '#ff00ff', '#00ff00', '#ffff00', '#ff0055', '#7000ff', '#00d4ff'];
-        let myColor = neonColors[Math.floor(Math.random() * neonColors.length)];
-        
-        // Manejo de Login sin recarga de página para evitar errores en GitHub
-        const loginOverlay = document.getElementById('login-overlay');
-        const usernameInput = document.getElementById('username');
-        const enterBtn = document.getElementById('enter-btn');
-        
-        let usuario = sessionStorage.getItem("neon_user_v2");
-        let usuarioColor = sessionStorage.getItem("neon_color_v2");
-
-        function activarChat(nombre, color) {
-            usuario = nombre;
-            usuarioColor = color;
-            loginOverlay.style.display = 'none';
-            document.getElementById('display-name').innerText = usuario;
-            document.getElementById('display-name').style.color = usuarioColor;
-        }
-
-        if (usuario) {
-            activarChat(usuario, usuarioColor);
-        }
-
-        enterBtn.onclick = () => {
-            const val = usernameInput.value.trim();
-            if (val) {
-                sessionStorage.setItem("neon_user_v2", val);
-                sessionStorage.setItem("neon_color_v2", myColor);
-                activarChat(val, myColor);
-            }
-        };
-
-        // Enviar Mensaje
-        const msgInput = document.getElementById('msg-input');
-        const sendBtn = document.getElementById('send');
-
-        const enviar = async () => {
-            if (msgInput.value.trim() && usuario) {
-                const texto = msgInput.value;
-                msgInput.value = "";
-                try {
-                    await addDoc(collection(db, "mensajes"), {
-                        autor: usuario,
-                        texto: texto,
-                        color: usuarioColor,
-                        timestamp: serverTimestamp()
-                    });
-                } catch (e) { console.error("Error al enviar:", e); }
-            }
-        };
-
-        sendBtn.onclick = enviar;
-        msgInput.onkeypress = (e) => { if(e.key === 'Enter') enviar(); };
-        document.getElementById('btnVaciar').onclick = () => { document.getElementById('chat-container').innerHTML = ''; };
-
-        // Leer Mensajes en Tiempo Real
-        const q = query(collection(db, "mensajes"), orderBy("timestamp"));
-        onSnapshot(q, (snapshot) => {
-            const container = document.getElementById('chat-container');
-            container.innerHTML = "";
-            snapshot.forEach((doc) => {
-                const d = doc.data();
-                if (d.texto) {
-                    const esMio = d.autor === usuario;
-                    const div = document.createElement('div');
-                    div.className = 'bubble';
-                    const msgColor = d.color || '#00f3ff';
-                    div.style.borderColor = msgColor;
-                    div.style.boxShadow = `0 0 8px ${msgColor}`;
-                    div.style.alignSelf = esMio ? 'flex-end' : 'flex-start';
-                    
-                    div.innerHTML = `<b style="color:${msgColor}">${d.autor}</b><span style="color:#fff">${d.texto}</span>`;
-                    container.appendChild(div);
-                }
-            });
-            container.scrollTop = container.scrollHeight;
-        });
-    </script>
-</body>
-</html>
+        /* Controles a Pant
