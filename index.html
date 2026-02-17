@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CubaChat Pro</title>
+    <title>CubaChat Pro - Live</title>
     <style>
+        /* Estilos optimizados para evitar saltos de línea */
         body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background: #e5ddd5; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        #cabecera { background: #075e54; color: white; padding: 15px; text-align: center; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        #cabecera { background: #075e54; color: white; padding: 15px; text-align: center; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10; }
         #mensajes { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-repeat: repeat; }
         .msg { padding: 10px; border-radius: 10px; max-width: 80%; box-shadow: 0 1px 1px rgba(0,0,0,0.1); font-size: 15px; line-height: 1.4; word-wrap: break-word; }
         .msg b { display: block; font-size: 12px; margin-bottom: 3px; color: #075e54; }
@@ -14,7 +15,7 @@
         .recibido { background: white; align-self: flex-start; border-top-left-radius: 0; }
         #controles { background: #f0f0f0; padding: 10px; display: flex; gap: 8px; border-top: 1px solid #ddd; }
         input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ccc; outline: none; font-size: 15px; }
-        button { background: #075e54; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+        button { background: #075e54; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         #status { font-size: 10px; color: red; text-align: center; background: #ffebeb; }
     </style>
 </head>
@@ -28,6 +29,7 @@
     </div>
 
     <script type="module">
+        // Importaciones estándar de Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -44,17 +46,16 @@
         const db = getFirestore(app);
         const statusDiv = document.getElementById("status");
 
-        // Usamos una clave nueva para limpiar cualquier error de sesión anterior
-        let usuario = sessionStorage.getItem("chat_user_gh_v1");
+        // SESIÓN: Forzamos el uso de sessionStorage para cumplir tu petición de reinicio al cerrar pestaña
+        let usuario = sessionStorage.getItem("cuba_session_v1");
         if(!usuario) {
-            usuario = prompt("¡Bienvenido! Introduce tu nombre:");
-            if(!usuario || usuario.trim() === "") {
-                usuario = "User" + Math.floor(Math.random() * 1000);
-            }
-            sessionStorage.setItem("chat_user_gh_v1", usuario);
+            usuario = prompt("Introduce tu nombre:");
+            if(!usuario || usuario.trim() === "") usuario = "Anon" + Math.floor(Math.random() * 100);
+            sessionStorage.setItem("cuba_session_v1", usuario);
         }
         document.getElementById("miNombre").innerText = usuario;
 
+        // Función de color para otros usuarios
         const getColor = (name) => {
             let hash = 0;
             for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -64,32 +65,34 @@
         const input = document.getElementById("mensajeInput");
         const btn = document.getElementById("btnEnviar");
 
-        const enviar = async () => {
+        // LÓGICA DE ENVÍO: Se ha simplificado para evitar errores de ejecución en GitHub
+        const enviarMensaje = async () => {
             const texto = input.value.trim();
-            if(texto !== "") {
-                input.value = "";
+            if (texto !== "") {
+                input.value = ""; // Limpiamos rápido para dar sensación de velocidad
                 try {
                     await addDoc(collection(db, "mensajes"), {
                         autor: usuario,
                         texto: texto,
                         timestamp: serverTimestamp()
                     });
-                } catch (e) { 
-                    statusDiv.innerText = "Error al enviar: " + e.message; 
+                } catch (e) {
+                    statusDiv.innerText = "Error al enviar: " + e.message;
                 }
             }
         };
 
-        btn.onclick = enviar;
-        input.onkeypress = (e) => { if(e.key === 'Enter') enviar(); };
+        btn.onclick = enviarMensaje;
+        input.onkeypress = (e) => { if(e.key === 'Enter') enviarMensaje(); };
 
+        // LÓGICA DE LECTURA: Actualización en tiempo real
         const q = query(collection(db, "mensajes"), orderBy("timestamp"));
         onSnapshot(q, (snapshot) => {
             const contenedor = document.getElementById("mensajes");
             contenedor.innerHTML = "";
             snapshot.forEach((doc) => {
                 const d = doc.data();
-                if(d.texto) {
+                if (d.texto) {
                     const esMio = d.autor === usuario;
                     const div = document.createElement("div");
                     div.className = "msg " + (esMio ? "enviado" : "recibido");
@@ -103,8 +106,8 @@
                 }
             });
             contenedor.scrollTop = contenedor.scrollHeight;
-        }, (error) => { 
-            statusDiv.innerText = "Error de conexión: " + error.message; 
+        }, (error) => {
+            statusDiv.innerText = "Error de red: " + error.message;
         });
     </script>
 </body>
