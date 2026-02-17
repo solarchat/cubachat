@@ -24,7 +24,7 @@
             overflow: hidden;
         }
 
-        /* AVISO CENTRAL DE BIENVENIDA */
+        /* AVISO CENTRAL */
         #aviso-central {
             position: fixed;
             top: 50%;
@@ -96,7 +96,7 @@
 
     <div id="login-overlay">
         <div class="login-box">
-            <h2 style="color:var(--neon-border)">ENTRAR A "EL SOLAR"</h2>
+            <h2 id="login-status" style="color:var(--neon-border)">ENTRAR A "EL SOLAR"</h2>
             <input type="text" id="username" placeholder="¿QUIÉN ERES?..." maxlength="15" style="background:#000; border:1px solid var(--neon-border); color:#fff; padding:12px; margin-bottom:20px; text-align:center; outline:none;">
             <br>
             <button id="enter-btn" style="padding: 12px 40px; cursor:pointer; background: var(--neon-border); border:none; font-weight:bold;">ACCEDER AL NODO</button>
@@ -136,9 +136,10 @@
         const neonColors = ['#00f3ff', '#ff00ff', '#00ff00', '#ffff00', '#ff0055', '#7000ff'];
         let myColor = neonColors[Math.floor(Math.random() * neonColors.length)];
         
-        let usuarioActual = sessionStorage.getItem("solar_name");
-        let usuarioColor = sessionStorage.getItem("solar_color");
+        let usuarioActual = "";
+        let usuarioColor = "";
 
+        // Función para mostrar el aviso de bienvenida
         function mostrarAvisoBienvenida(nombre) {
             const aviso = document.getElementById('aviso-central');
             aviso.innerHTML = `${nombre}<br><span style="font-size:1rem; color:#fff">! SALUDATE QUE WUELTA !</span>`;
@@ -146,17 +147,90 @@
             setTimeout(() => { aviso.style.display = 'none'; }, 3000);
         }
 
-        function iniciarInterfaz(nombre, color, esNuevoLogin) {
-            document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('mi-nombre-display').innerText = nombre;
-            document.getElementById('mi-nombre-display').style.color = color;
+        // Función para activar la interfaz del chat
+        function activarChat(nombre, color, esNuevo) {
             usuarioActual = nombre;
             usuarioColor = color;
+            document.getElementById('mi-nombre-display').innerText = nombre;
+            document.getElementById('mi-nombre-display').style.color = color;
+            document.getElementById('login-overlay').style.display = 'none';
             
-            if(esNuevoLogin) {
+            if(esNuevo) {
                 mostrarAvisoBienvenida(nombre);
             }
         }
 
-        if (usuarioActual) {
-            iniciarInterfaz(usuarioActual, usuarioColor, false);
+        // Verificar si ya hay una sesión activa al cargar
+        const nombreGuardado = sessionStorage.getItem("solar_name");
+        const colorGuardado = sessionStorage.getItem("solar_color");
+        if (nombreGuardado && colorGuardado) {
+            activarChat(nombreGuardado, colorGuardado, false);
+        }
+
+        // Evento del botón de entrada
+        document.getElementById('enter-btn').addEventListener('click', () => {
+            const nombreInput = document.getElementById('username').value.trim();
+            if (nombreInput) {
+                document.getElementById('login-status').innerText = "CONECTANDO...";
+                sessionStorage.setItem("solar_name", nombreInput);
+                sessionStorage.setItem("solar_color", myColor);
+                activarChat(nombreInput, myColor, true);
+            }
+        });
+
+        // Función para enviar mensajes
+        const enviarMensaje = async () => {
+            const input = document.getElementById('msg-input');
+            if (input.value.trim() && usuarioActual) {
+                const texto = input.value;
+                input.value = "";
+                try {
+                    await addDoc(collection(db, "mensajes"), {
+                        autor: usuarioActual,
+                        texto: texto,
+                        color: usuarioColor,
+                        timestamp: serverTimestamp()
+                    });
+                } catch (e) {
+                    console.error("Error al enviar:", e);
+                }
+            }
+        };
+
+        document.getElementById('send').onclick = enviarMensaje;
+        document.getElementById('msg-input').onkeypress = (e) => { if(e.key === 'Enter') enviarMensaje(); };
+
+        // Botón para limpiar pantalla localmente
+        document.getElementById('btnVaciar').onclick = () => {
+            if(confirm("¿Limpiar todo lo escrito de tu pantalla? (Solo para ti)")){
+                localStorage.setItem("limpieza_solar_ts", new Date().getTime());
+                location.reload(); // Recarga para aplicar el filtro de tiempo
+            }
+        };
+
+        // Escuchar mensajes en tiempo real
+        const q = query(collection(db, "mensajes"), orderBy("timestamp"));
+        onSnapshot(q, (snap) => {
+            const cont = document.getElementById('chat-container');
+            const t_limpieza = parseInt(localStorage.getItem("limpieza_solar_ts") || "0");
+            cont.innerHTML = "";
+            
+            snap.forEach((doc) => {
+                const d = doc.data();
+                const t_msj = d.timestamp ? d.timestamp.toMillis() : new Date().getTime();
+                
+                if (t_msj > t_limpieza) {
+                    const esMio = d.autor === usuarioActual;
+                    const div = document.createElement('div');
+                    div.className = 'bubble';
+                    div.style.borderColor = d.color || '#00f3ff';
+                    div.style.alignSelf = esMio ? 'flex-end' : 'flex-start';
+                    div.innerHTML = `<b style="color:${d.color}">${d.autor}</b><span style="color:#fff">${d.texto}</span>`;
+                    cont.appendChild(div);
+                }
+            });
+            cont.scrollTop = cont.scrollHeight;
+        });
+    </script>
+</body>
+</html>
