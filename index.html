@@ -19,7 +19,7 @@
                 linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
             background-size: 100% 100%, 40px 40px, 40px 40px;
             color: #fff;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
@@ -27,7 +27,9 @@
             overflow: hidden;
         }
 
-        /* Cabecera con el nuevo título */
+        #login-overlay { position: fixed; inset: 0; background: #000; display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .login-box { padding: 40px; border: 2px solid var(--neon-border); text-align: center; background: #050505; box-shadow: 0 0 30px var(--neon-border); }
+        
         #header {
             padding: 15px 20px;
             display: flex;
@@ -36,31 +38,10 @@
             border-bottom: 2px solid var(--neon-border);
             background: rgba(0,0,0,0.9);
             box-shadow: 0 0 15px var(--neon-border);
-            z-index: 100;
         }
 
-        #header h1 { 
-            margin: 0; 
-            font-size: 1.5rem; 
-            letter-spacing: 5px; 
-            color: var(--neon-border); 
-            text-shadow: 0 0 10px var(--neon-border);
-        }
+        #header h1 { margin: 0; font-size: 1.5rem; letter-spacing: 5px; color: var(--neon-border); text-shadow: 0 0 10px var(--neon-border); }
 
-        #btnVaciar {
-            background: transparent;
-            color: var(--danger);
-            border: 1px solid var(--danger);
-            padding: 6px 15px;
-            cursor: pointer;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            transition: 0.3s;
-        }
-        #btnVaciar:hover { background: var(--danger); color: white; box-shadow: 0 0 15px var(--danger); }
-
-        /* Contenedor de mensajes */
         #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
 
         .bubble {
@@ -69,20 +50,11 @@
             max-width: 80%;
             background: rgba(0, 0, 0, 0.8);
             border-left: 4px solid;
-            backdrop-filter: blur(5px);
             box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
         }
 
-        .bubble b { display: block; font-size: 0.8rem; margin-bottom: 4px; letter-spacing: 1px; }
-
-        /* --- CAMBIO: INPUT A TODO LO LARGO --- */
-        #controls {
-            display: flex;
-            flex-direction: column; 
-            background: #000;
-            border-top: 2px solid var(--neon-border);
-        }
-
+        /* INPUT A TODO LO LARGO */
+        #controls { background: #000; border-top: 2px solid var(--neon-border); }
         #msg-input {
             width: 100%; 
             background: #050505;
@@ -90,4 +62,126 @@
             color: #fff;
             padding: 25px; 
             font-size: 1.1rem;
-            outline:
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        #send-bar { display: flex; justify-content: flex-end; padding: 10px; background: #000; }
+        #send { background: var(--neon-border); color: #000; border: none; padding: 10px 40px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        #btnVaciar { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 6px 15px; cursor: pointer; font-weight: bold; font-size: 0.7rem; }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2 style="color:var(--neon-border)">ENTRAR A "EL SOLAR"</h2>
+            <input type="text" id="username" placeholder="¿QUIÉN ERES?..." maxlength="15" style="background:#000; border:1px solid var(--neon-border); color:#fff; padding:12px; margin-bottom:20px; text-align:center;">
+            <br>
+            <button id="enter-btn" style="padding: 12px 40px; cursor:pointer; background: var(--neon-border); border:none; font-weight:bold;">ACCEDER AL NODO</button>
+        </div>
+    </div>
+
+    <div id="header">
+        <h1>EL SOLAR</h1>
+        <button id="btnVaciar">LIMPIEZA TOTAL</button>
+    </div>
+
+    <div id="chat-container"></div>
+
+    <div id="controls">
+        <input type="text" id="msg-input" placeholder="Escribe tu mensaje para el solar..." autocomplete="off">
+        <div id="send-bar">
+            <button id="send">TRANSMITIR</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCfOBCYgEEfgKC53t-v2G6ll_XwD9nh6C8",
+            authDomain: "cubachat-6f674.firebaseapp.com",
+            projectId: "cubachat-6f674",
+            storageBucket: "cubachat-6f674.firebasestorage.app",
+            messagingSenderId: "351613355145",
+            appId: "1:351613355145:web:e8e6939aac0f08ffa33258"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Generación de color aleatorio
+        const neonColors = ['#00f3ff', '#ff00ff', '#00ff00', '#ffff00', '#ff0055', '#7000ff'];
+        let myColor = neonColors[Math.floor(Math.random() * neonColors.length)];
+        
+        // Recuperar sesión
+        let usuario = sessionStorage.getItem("solar_name");
+        let usuarioColor = sessionStorage.getItem("solar_color");
+
+        // Solo ocultar el login si el usuario existe
+        if (usuario && usuarioColor) {
+            document.getElementById('login-overlay').style.display = 'none';
+        }
+
+        // Evento de Login
+        document.getElementById('enter-btn').onclick = () => {
+            const val = document.getElementById('username').value.trim();
+            if (val) {
+                sessionStorage.setItem("solar_name", val);
+                sessionStorage.setItem("solar_color", myColor);
+                window.location.reload(); // Recarga para activar el estado
+            }
+        };
+
+        // Función Enviar
+        const enviar = async () => {
+            const input = document.getElementById('msg-input');
+            if (input.value.trim() && usuario) {
+                const texto = input.value;
+                input.value = "";
+                try {
+                    await addDoc(collection(db, "mensajes"), {
+                        autor: usuario,
+                        texto: texto,
+                        color: usuarioColor,
+                        timestamp: serverTimestamp()
+                    });
+                } catch (e) { console.error(e); }
+            }
+        };
+
+        document.getElementById('send').onclick = enviar;
+        document.getElementById('msg-input').onkeypress = (e) => { if(e.key === 'Enter') enviar(); };
+
+        // Botón Purga
+        document.getElementById('btnVaciar').onclick = async () => {
+            if(confirm("¿BORRAR TODA LA BASE DE DATOS?")){
+                const snap = await getDocs(collection(db, "mensajes"));
+                snap.forEach(async (d) => { await deleteDoc(doc(db, "mensajes", d.id)); });
+            }
+        };
+
+        // Escuchar mensajes
+        const q = query(collection(db, "mensajes"), orderBy("timestamp"));
+        onSnapshot(q, (snap) => {
+            const cont = document.getElementById('chat-container');
+            cont.innerHTML = "";
+            snap.forEach((doc) => {
+                const d = doc.data();
+                if (d.texto) {
+                    const esMio = d.autor === usuario;
+                    const div = document.createElement('div');
+                    div.className = 'bubble';
+                    div.style.borderColor = d.color || '#00f3ff';
+                    div.style.alignSelf = esMio ? 'flex-end' : 'flex-start';
+                    div.innerHTML = `<b style="color:${d.color}">${d.autor}</b><span style="color:#fff">${d.texto}</span>`;
+                    cont.appendChild(div);
+                }
+            });
+            cont.scrollTop = cont.scrollHeight;
+        });
+    </script>
+</body>
+</html>
