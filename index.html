@@ -24,10 +24,10 @@
             overflow: hidden;
         }
 
-        /* --- NUEVA ESTRUCTURA LATERAL --- */
+        /* SIDEBAR */
         #sidebar {
-            width: 200px;
-            background: rgba(0, 0, 0, 0.9);
+            width: 220px;
+            background: rgba(0, 0, 0, 0.95);
             border-right: 2px solid var(--neon-border);
             display: flex;
             flex-direction: column;
@@ -39,233 +39,37 @@
             font-size: 0.8rem;
             color: var(--neon-border);
             letter-spacing: 2px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-transform: uppercase;
+            border-bottom: 1px solid #222;
+            padding-bottom: 5px;
         }
+
+        #user-list { flex: 1; overflow-y: auto; }
 
         .user-item {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 8px 5px;
+            padding: 10px 5px;
             cursor: pointer;
-            transition: 0.2s;
-            border-radius: 4px;
-            font-size: 0.9rem;
+            border-bottom: 1px solid #111;
         }
 
         .user-item:hover { background: rgba(0, 243, 255, 0.1); }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             background: var(--online-green);
             border-radius: 50%;
             box-shadow: 0 0 8px var(--online-green);
         }
 
-        /* --- CONTENEDOR PRINCIPAL --- */
-        #main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
+        /* CONTENIDO PRINCIPAL */
+        #main-content { flex: 1; display: flex; flex-direction: column; }
 
-        /* AVISO CENTRAL */
-        #aviso-central {
-            position: fixed;
-            top: 50%;
-            left: 60%; /* Ajustado por el sidebar */
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.95);
-            border: 2px solid var(--solar-yellow);
-            color: var(--solar-yellow);
-            padding: 25px;
-            font-size: 1.5rem;
-            text-align: center;
-            z-index: 3000;
-            display: none;
-            box-shadow: 0 0 30px var(--solar-yellow);
-            pointer-events: none;
-        }
-
-        #login-overlay { position: fixed; inset: 0; background: #000; display: flex; justify-content: center; align-items: center; z-index: 4000; }
-        .login-box { padding: 40px; border: 2px solid var(--neon-border); text-align: center; background: #050505; }
-        
         #header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--neon-border); background: rgba(0,0,0,0.8); }
         #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
         
-        .bubble { padding: 12px; border-radius: 8px; max-width: 80%; background: rgba(255, 255, 255, 0.05); border-left: 4px solid; }
-
-        #controls { border-top: 2px solid var(--neon-border); background: #000; }
-        #msg-input { width: 100%; background: transparent; border: none; color: #fff; padding: 25px; font-size: 1.1rem; outline: none; }
-        #send-bar { display: flex; justify-content: flex-end; padding: 10px; }
-        #send { background: var(--neon-border); border: none; padding: 10px 30px; cursor: pointer; font-weight: bold; }
-        #btnVaciar { background: transparent; color: var(--danger); border: 1px solid var(--danger); cursor: pointer; padding: 5px 10px; font-size: 0.6rem; }
-
-        /* Estilo especial para cuando te mencionan */
-        .mencion { color: var(--solar-yellow); font-weight: bold; }
-    </style>
-</head>
-<body>
-
-    <div id="aviso-central"></div>
-
-    <div id="login-overlay">
-        <div class="login-box">
-            <h2 id="login-status" style="color:var(--neon-border)">IDENTIDAD REQUERIDA</h2>
-            <input type="text" id="username" placeholder="NOMBRE..." maxlength="15" style="background:#000; border:1px solid var(--neon-border); color:#fff; padding:12px; margin-bottom:20px; text-align:center; outline:none;">
-            <br>
-            <button id="enter-btn" style="padding: 12px 40px; cursor:pointer; background: var(--neon-border); border:none; font-weight:bold;">CONECTAR</button>
-        </div>
-    </div>
-
-    <div id="sidebar">
-        <h3>Online</h3>
-        <div id="user-list">
-            </div>
-    </div>
-
-    <div id="main-content">
-        <div id="header">
-            <h1 style="margin:0; font-size:1.1rem; color:var(--neon-border)">EL SOLAR // <span id="mi-nombre-display"></span></h1>
-            <button id="btnVaciar">LIMPIAR PANTALLA</button>
-        </div>
-
-        <div id="chat-container"></div>
-
-        <div id="controls">
-            <input type="text" id="msg-input" placeholder="Escribe tu mensaje o toca un nombre para mencionar..." autocomplete="off">
-            <div id="send-bar">
-                <button id="send">TRANSMITIR</button>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCfOBCYgEEfgKC53t-v2G6ll_XwD9nh6C8",
-            authDomain: "cubachat-6f674.firebaseapp.com",
-            projectId: "cubachat-6f674",
-            storageBucket: "cubachat-6f674.firebasestorage.app",
-            messagingSenderId: "351613355145",
-            appId: "1:351613355145:web:e8e6939aac0f08ffa33258"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        const neonColors = ['#00f3ff', '#ff00ff', '#00ff00', '#ffff00', '#ff0055', '#7000ff'];
-        let myColor = neonColors[Math.floor(Math.random() * neonColors.length)];
-        let usuarioActual = sessionStorage.getItem("solar_name") || "";
-        let usuarioColor = sessionStorage.getItem("solar_color") || "";
-
-        // FUNCIÓN DE MENCIÓN
-        window.mencionarUser = (name) => {
-            const input = document.getElementById('msg-input');
-            input.value = `@${name} ` + input.value;
-            input.focus();
-        };
-
-        function activarChat(nombre, color, esNuevo) {
-            usuarioActual = nombre;
-            usuarioColor = color;
-            document.getElementById('mi-nombre-display').innerText = nombre;
-            document.getElementById('mi-nombre-display').style.color = color;
-            document.getElementById('login-overlay').style.display = 'none';
-            if(esNuevo) {
-                document.getElementById('aviso-central').innerHTML = `${nombre}<br><span style="font-size:1rem; color:#fff">! SALUDATE QUE WUELTA !</span>`;
-                document.getElementById('aviso-central').style.display = 'block';
-                setTimeout(() => { document.getElementById('aviso-central').style.display = 'none'; }, 3000);
-            }
-        }
-
-        if (usuarioActual) activarChat(usuarioActual, usuarioColor, false);
-
-        document.getElementById('enter-btn').onclick = () => {
-            const val = document.getElementById('username').value.trim();
-            if (val) {
-                sessionStorage.setItem("solar_name", val);
-                sessionStorage.setItem("solar_color", myColor);
-                activarChat(val, myColor, true);
-            }
-        };
-
-        const enviarMensaje = async () => {
-            const input = document.getElementById('msg-input');
-            if (input.value.trim() && usuarioActual) {
-                const texto = input.value;
-                input.value = "";
-                await addDoc(collection(db, "mensajes"), {
-                    autor: usuarioActual,
-                    texto: texto,
-                    color: usuarioColor,
-                    timestamp: serverTimestamp()
-                });
-            }
-        };
-
-        document.getElementById('send').onclick = enviarMensaje;
-        document.getElementById('msg-input').onkeypress = (e) => { if(e.key === 'Enter') enviarMensaje(); };
-
-        document.getElementById('btnVaciar').onclick = () => {
-            if(confirm("¿Limpiar pantalla?")){
-                localStorage.setItem("limpieza_solar_ts", new Date().getTime());
-                location.reload();
-            }
-        };
-
-        // LISTENER DE MENSAJES Y LISTA DE USUARIOS
-        onSnapshot(query(collection(db, "mensajes"), orderBy("timestamp")), (snap) => {
-            const cont = document.getElementById('chat-container');
-            const listContainer = document.getElementById('user-list');
-            const t_limpieza = parseInt(localStorage.getItem("limpieza_solar_ts") || "0");
-            
-            cont.innerHTML = "";
-            let usuariosVistos = new Set();
-            let listaHTML = "";
-
-            snap.forEach((doc) => {
-                const d = doc.data();
-                const t_msj = d.timestamp ? d.timestamp.toMillis() : new Date().getTime();
-
-                // Lógica de lista de usuarios (quien haya escrito algo aparece en la lista)
-                if(!usuariosVistos.has(d.autor)) {
-                    usuariosVistos.add(d.autor);
-                    listaHTML += `
-                        <div class="user-item" onclick="mencionarUser('${d.autor}')">
-                            <div class="status-dot"></div>
-                            <span style="color:${d.color}">${d.autor}</span>
-                        </div>`;
-                }
-                
-                // Mostrar mensajes en el chat
-                if (t_msj > t_limpieza) {
-                    const esMio = d.autor === usuarioActual;
-                    const div = document.createElement('div');
-                    div.className = 'bubble';
-                    div.style.borderColor = d.color;
-                    div.style.alignSelf = esMio ? 'flex-end' : 'flex-start';
-                    
-                    // Resaltar menciones si el texto contiene @MiNombre
-                    let textoProcesado = d.texto;
-                    if(usuarioActual && textoProcesado.includes(`@${usuarioActual}`)) {
-                        textoProcesado = textoProcesado.replace(`@${usuarioActual}`, `<span class="mencion">@${usuarioActual}</span>`);
-                        div.style.background = "rgba(255, 255, 0, 0.1)"; // Fondo sutil si te mencionan
-                    }
-
-                    div.innerHTML = `<b style="color:${d.color}">${d.autor}</b><span style="color:#fff">${textoProcesado}</span>`;
-                    cont.appendChild(div);
-                }
-            });
-
-            listContainer.innerHTML = listaHTML;
-            cont.scrollTop = cont.scrollHeight;
-        });
-    </script>
-</body>
-</html>
+        .bubble { padding: 12px; border-radius: 8px; max-width: 80%; background: rgba(255, 25
