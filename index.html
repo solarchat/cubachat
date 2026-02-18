@@ -3,112 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INFORMACIÓN MUSEO</title>
+    <title>MUSEO - GUÍA OFICIAL</title>
     <style>
         :root {
-            --gold: #c5a059;
-            --bg: #121212;
-            --card-bg: #1e1e1e;
-            --text: #ffffff;
-            --border: #333333;
-            --danger: #ff5555;
+            --azul-marino: #002366;
+            --azul-cielo: #87CEEB;
+            --blanco: #FFFFFF;
+            --crema-yeso: #F8F9FA;
+            --sombra-yeso: rgba(0,0,0,0.15);
         }
 
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            background-color: var(--azul-cielo);
+            color: var(--azul-marino);
+            font-family: 'Georgia', 'Times New Roman', serif;
             margin: 0;
+            padding: 0;
             line-height: 1.6;
         }
 
-        /* DISEÑO DE CABECERA CON GRÁFICOS CSS */
-        header {
-            padding: 60px 20px;
+        /* DIVISOR DE ARABESCO (EFECTO YESO) */
+        .arabesco {
             text-align: center;
-            background: linear-gradient(135deg, #1a1a1a 25%, #222 25%, #222 50%, #1a1a1a 50%, #1a1a1a 75%, #222 75%, #222 100%);
-            background-size: 40px 40px; /* Patrón geométrico simple */
-            border-bottom: 5px solid var(--gold);
+            font-size: 2rem;
+            color: var(--blanco);
+            margin: 40px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 2px 2px 4px var(--sombra-yeso);
+            user-select: none;
+        }
+
+        .arabesco::before, .arabesco::after {
+            content: "";
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--blanco), transparent);
+            margin: 0 20px;
+        }
+
+        /* HEADER ESTILO MOLDURA */
+        header {
+            background-color: var(--azul-marino);
+            color: var(--blanco);
+            padding: 80px 20px;
+            text-align: center;
+            border-bottom: 10px double var(--azul-cielo);
+            box-shadow: 0 10px 20px var(--sombra-yeso);
         }
 
         header h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             margin: 0;
-            letter-spacing: 4px;
-            color: var(--gold);
             text-transform: uppercase;
+            letter-spacing: 10px;
+            font-weight: normal;
         }
 
         header p {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            color: #888;
+            letter-spacing: 4px;
+            font-size: 1rem;
+            opacity: 0.9;
         }
 
-        /* NAVEGACIÓN STICKY */
+        /* NAVEGACIÓN */
         nav {
+            background-color: var(--blanco);
+            padding: 15px;
             position: sticky;
             top: 0;
-            background: rgba(0, 0, 0, 0.95);
-            padding: 15px 0;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
             z-index: 1000;
-            border-bottom: 1px solid var(--gold);
-            flex-wrap: wrap;
+            text-align: center;
+            box-shadow: 0 4px 6px var(--sombra-yeso);
         }
 
         nav a {
-            color: var(--text);
+            color: var(--azul-marino);
             text-decoration: none;
-            font-size: 0.7rem;
+            margin: 0 15px;
             font-weight: bold;
             text-transform: uppercase;
-            padding: 5px 10px;
-            border: 1px solid transparent;
+            font-size: 0.8rem;
+            transition: 0.3s;
         }
 
         nav a:hover {
-            border-color: var(--gold);
-            color: var(--gold);
+            color: var(--azul-cielo);
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 40px 20px;
+            background-color: rgba(255, 255, 255, 0.4);
+            border-left: 1px solid var(--blanco);
+            border-right: 1px solid var(--blanco);
         }
 
         section {
-            margin-bottom: 60px;
-            scroll-margin-top: 80px;
+            padding: 20px 0;
         }
 
         h2 {
-            font-size: 1.4rem;
-            color: var(--gold);
+            text-align: center;
+            font-size: 2rem;
             text-transform: uppercase;
-            border-left: 4px solid var(--gold);
-            padding-left: 15px;
             margin-bottom: 30px;
+            font-weight: normal;
         }
 
-        /* GRIDS Y TARJETAS */
+        /* TARJETAS ESTILO PANEL DE PARED */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
         }
 
         .card {
-            background: var(--card-bg);
-            padding: 25px;
-            border: 1px solid var(--border);
-            border-radius: 4px;
+            background-color: var(--blanco);
+            padding: 30px;
+            border-radius: 2px;
+            box-shadow: inset 0 0 15px var(--sombra-yeso), 5px 5px 15px var(--sombra-yeso);
+            border: 8px solid var(--blanco);
+            outline: 1px solid var(--azul-cielo);
         }
 
         .card h3 {
             margin-top: 0;
-            font
+            border-bottom: 1px solid var(--azul-cielo);
+            padding-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* NORMAS */
+        .normas-box {
+            background-color: var(--azul-marino);
+            color: var(--blanco);
+            padding: 40px;
+            border: 4px double var(--azul-cielo);
+        }
+
+        .normas-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .normas-box li {
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .normas-box li::before {
+            content: "❧";
+            position: absolute;
+            left: 0;
+            color: var(--azul-cielo);
+        }
+
+        footer {
+            background-color: var(--azul-marino);
+            color: var(--blanco);
+            text-align: center;
+            padding: 60px 20px;
+            border-top: 5px solid var(--azul-cielo);
+        }
+
+        /* DIVISOR DE ARABESCO INFERIOR */
+        .fin-seccion {
+            font-size: 1.5rem;
+            color: var(--blanco);
+            margin: 20px 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>EL MUSEO</h1>
+        <p>REPRESENTACIÓN DEL PATRIMONIO</p>
+    </header>
+
+    <nav>
+        <a href="#horarios">Horarios</a>
+        <a href="#salas">Salas</a>
+        <a href="#itinerantes">Itinerantes</a>
+        <a href="#normas">Normas</a>
+    </nav>
+
+    <div class="container">
+        
+        <section id="horarios">
+            <h2>Horarios de Visita</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Días de Semana</h3>
+                    <p>Martes a Viernes<br><b>09:00 — 17:00</b></p>
+                </div>
+                <div class="card">
+                    <h3>Fines de Semana</h3>
+                    <p>Sábados y Domingos<br><b>10:00 — 18:00</b></p>
+                </div>
+            </div>
+        </section>
+
+        <div class="arabesco">❧ ⚜ ☙</div>
+
+        <section id="salas">
+            <h2>Nuestras Salas</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Sala de Arqueología</h3>
+                    <p>Vestigios de las civilizaciones que forjaron nuestra historia.</p>
+                </div>
+                <div class="card">
+                    <h3>Galería de Bellas Artes</h3>
+                    <p>Exhibición permanente de óleos y esculturas neoclásicas.</p>
+                </div>
+                <div class="card">
+                    <h3>Salón de Historia</h3>
+                    <p>Archivos y mobiliario del siglo XVIII y XIX.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="arabesco">❧ ⚜ ☙</div>
+
+        <section id="itinerantes">
+            <h2>Exposiciones Itinerantes</h2>
+            <div class="card">
+                <h3>Vanguardia 2026</h3>
+                <p>Una mirada moderna sobre la técnica clásica. Disponible en el ala este hasta finales de marzo.</p>
+            </div>
+        </section>
+
+        <div class="arabesco">❧ ⚜ ☙</div>
+
+        <section id="normas">
+            <h2>Normas de la Instalación</h2>
+            <div class="normas-box">
+                <ul>
+                    <li>No se permite el uso de dispositivos de iluminación artificial (flash).</li>
+                    <li>Mantenga un tono de voz solemne durante su recorrido.</li>
+                    <li>Queda terminantemente prohibido el contacto físico con las piezas de exhibición.</li>
+                    <li>No se permite la entrada con bultos de gran tamaño o alimentos.</li>
+                </ul>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <div class="fin-seccion">❦</div>
+        <p>&copy; 2026 EL MUSEO</p>
+        <p><small>Información Oficial al Visitante</small></p>
+    </footer>
+
+</body>
+</html>
