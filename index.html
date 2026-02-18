@@ -3,113 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GUÍA DEL MUSEO | Información Oficial</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>INFORMACIÓN MUSEO</title>
     <style>
         :root {
-            --primary: #c5a059; /* Dorado Museo */
-            --bg: #0a0a0a;
-            --surface: #1a1a1a;
-            --text: #e0e0e0;
+            --gold: #c5a059;
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --text: #ffffff;
+            --border: #333333;
+            --danger: #ff5555;
         }
 
         body {
             background-color: var(--bg);
             color: var(--text);
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
             margin: 0;
-            scroll-behavior: smooth;
+            line-height: 1.6;
         }
 
-        /* HERO SECTION */
+        /* DISEÑO DE CABECERA CON GRÁFICOS CSS */
         header {
-            height: 60vh;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
-                        url('https://images.unsplash.com/photo-1518998053502-53cc83e953d1?auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            padding: 60px 20px;
             text-align: center;
-            border-bottom: 3px solid var(--primary);
+            background: linear-gradient(135deg, #1a1a1a 25%, #222 25%, #222 50%, #1a1a1a 50%, #1a1a1a 75%, #222 75%, #222 100%);
+            background-size: 40px 40px; /* Patrón geométrico simple */
+            border-bottom: 5px solid var(--gold);
         }
 
-        header h1 { font-size: 3rem; margin: 0; letter-spacing: 5px; color: var(--primary); }
+        header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            letter-spacing: 4px;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
 
-        /* NAVEGACIÓN RÁPIDA */
+        header p {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: #888;
+        }
+
+        /* NAVEGACIÓN STICKY */
         nav {
             position: sticky;
             top: 0;
-            background: var(--surface);
-            padding: 15px;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 15px 0;
             display: flex;
             justify-content: center;
-            gap: 20px;
-            z-index: 100;
+            gap: 15px;
+            z-index: 1000;
+            border-bottom: 1px solid var(--gold);
             flex-wrap: wrap;
-            border-bottom: 1px solid #333;
         }
 
-        nav a { color: var(--text); text-decoration: none; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
-        nav a:hover { color: var(--primary); }
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 5px 10px;
+            border: 1px solid transparent;
+        }
 
-        .container { max-width: 1000px; margin: 40px auto; padding: 20px; }
+        nav a:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
 
-        .section { margin-bottom: 60px; scroll-margin-top: 100px; }
-        
-        h2 { 
-            border-left: 5px solid var(--primary); 
-            padding-left: 15px; 
-            text-transform: uppercase; 
-            letter-spacing: 2px;
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        section {
+            margin-bottom: 60px;
+            scroll-margin-top: 80px;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            border-left: 4px solid var(--gold);
+            padding-left: 15px;
             margin-bottom: 30px;
         }
 
-        /* GRID DE HORARIOS Y SALAS */
-        .info-grid {
+        /* GRIDS Y TARJETAS */
+        .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
         }
 
         .card {
-            background: var(--surface);
+            background: var(--card-bg);
             padding: 25px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            transition: 0.3s;
+            border: 1px solid var(--border);
+            border-radius: 4px;
         }
 
-        .card:hover { border-color: var(--primary); transform: translateY(-5px); }
-        .card i { color: var(--primary); font-size: 1.5rem; margin-bottom: 15px; }
-        .card h3 { margin-top: 0; }
-
-        /* NORMAS */
-        .normas-list {
-            background: #111;
-            padding: 20px;
-            border-radius: 8px;
-            border-left: 4px solid #ff4444;
-        }
-
-        .normas-list li { margin-bottom: 15px; list-style: none; display: flex; align-items: center; gap: 10px; }
-        .normas-list i { color: #ff4444; }
-
-        /* GALERÍA ITINERANTE */
-        .gallery-scroll {
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            padding-bottom: 20px;
-        }
-
-        .gallery-item {
-            min-width: 300px;
-            background: var(--surface);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .gallery-item img { width: 100%; height: 200
+        .card h3 {
+            margin-top: 0;
+            font
